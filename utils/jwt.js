@@ -21,8 +21,16 @@ const attachCookiesToResponse = (res, payload) => {
     });
 }
 
+const removeCookies = (res) => {
+    res.cookie('token', 'logout', {
+        httpOnly: true,
+        expires: new Date(Date.now())
+    });
+}
+
 module.exports = {
     createToken,
     verifyToken,
-    attachCookiesToResponse
+    attachCookiesToResponse,
+    removeCookies
 }

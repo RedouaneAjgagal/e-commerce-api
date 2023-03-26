@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const { verifyToken, attachCookiesToResponse } = require('../utils');
+const { verifyToken, attachCookiesToResponse, removeCookies } = require('../utils');
 const User = require('../models/User');
 
 const register = async (req, res) => {
@@ -39,10 +39,8 @@ const login = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-    const { token } = req.signedCookies;
-    const userInfo = verifyToken(token);
-    console.log(userInfo, token);
-    res.send('logout');
+    removeCookies(res);
+    res.status(StatusCodes.OK).json({msg: 'user logged out!'});
 }
 
 

@@ -27,7 +27,8 @@ app.use(cookieParser(process.env.JWT_SECRET));
 
 
 app.get('/', (req, res) => {
-    res.send('hello world');
+    const { token } = req.signedCookies;
+    res.json(token);
 });
 
 app.use('/api/v1/auth', authRouter);
