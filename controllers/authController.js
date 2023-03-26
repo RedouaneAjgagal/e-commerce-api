@@ -20,7 +20,22 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    res.send('login')
+    const { email, password } = req.body;
+    if (!email || !password) {
+        throw new BadRequestError('email and password are required');
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new UnauthenticatedError('Invalid email or password');
+    }
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect) {
+        throw new UnauthenticatedError('Invalid email or password');
+    }
+    const tokenUser = { id: user._id, name: user.name, role: user.role }
+    attachCookiesToResponse(res, tokenUser)
+
+    res.status(StatusCodes.OK).json({ user: tokenUser });
 }
 
 const logout = async (req, res) => {
