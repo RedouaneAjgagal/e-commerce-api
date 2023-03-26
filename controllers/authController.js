@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const { createToken } = require('../utils')
+const { verifyToken, attachCookiesToResponse } = require('../utils');
 const User = require('../models/User');
 
 const register = async (req, res) => {
@@ -15,8 +15,8 @@ const register = async (req, res) => {
     }
     const newUser = await User.create({ name, email, password });
     const tokenUser = { id: newUser._id, name: newUser.name, role: newUser.role }
-    const token = createToken(tokenUser)
-    res.status(StatusCodes.CREATED).json({ user: tokenUser, token });
+    attachCookiesToResponse(res, tokenUser);
+    res.status(StatusCodes.CREATED).json({ user: tokenUser });
 }
 
 const login = async (req, res) => {
@@ -24,7 +24,10 @@ const login = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-    res.send('logout')
+    const { token } = req.signedCookies;
+    const userInfo = verifyToken(token);
+    console.log(userInfo, token);
+    res.send('logout');
 }
 
 

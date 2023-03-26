@@ -10,6 +10,7 @@ const connectDB = require('./db/connect');
 
 // Extra packages
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 // routes
 const authRouter = require('./routes/authRoutes');
@@ -22,13 +23,14 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 
 app.use(morgan('dev'))
 app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 
 app.get('/', (req, res) => {
     res.send('hello world');
 });
 
-app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/auth', authRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
