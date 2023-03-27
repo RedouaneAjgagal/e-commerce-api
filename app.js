@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser');
 
 // routes
 const authRouter = require('./routes/authRoutes');
+const userRouter = require('./routes/userRoutes');
 
 // Middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
