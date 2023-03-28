@@ -9,10 +9,10 @@ const authorizePermissions = require('../middleware/authorization');
 const { getAllUsers, getSingleUser, showCurrentUser, updateUser, updateUserPassword } = require('../controllers/userController');
 
 router.route('/')
-    .get(authenticateUser, authorizePermissions('admin', 'owner'), getAllUsers);
+    .get(authenticateUser, authorizePermissions('admin'), getAllUsers);
 
 router.route('/showMe')
-    .get(showCurrentUser);
+    .get(authenticateUser, showCurrentUser);
 
 router.route('/updateUser')
     .patch(updateUser);
