@@ -18,7 +18,7 @@ router.route('/updateUser')
     .patch(updateUser);
 
 router.route('/updateUserPassword')
-    .patch(updateUserPassword);
+    .patch(authenticateUser, updateUserPassword);
 
 router.route('/:id')
     .get(authenticateUser, getSingleUser);
