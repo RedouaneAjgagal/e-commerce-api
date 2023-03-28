@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, UnauthenticatedError } = require('../errors');
-const { verifyToken, attachCookiesToResponse, removeCookies } = require('../utils');
+const { attachCookiesToResponse, removeCookies, createTokenUser } = require('../utils');
 const User = require('../models/User');
 
 const register = async (req, res) => {
@@ -14,7 +14,7 @@ const register = async (req, res) => {
         throw new BadRequestError('Email already exist, please choose another one.');
     }
     const newUser = await User.create({ name, email, password });
-    const tokenUser = { id: newUser._id, name: newUser.name, role: newUser.role }
+    const tokenUser = createTokenUser(newUser)
     attachCookiesToResponse(res, tokenUser);
     res.status(StatusCodes.CREATED).json({ user: tokenUser });
 }
@@ -32,7 +32,7 @@ const login = async (req, res) => {
     if (!isPasswordCorrect) {
         throw new UnauthenticatedError('Invalid email or password');
     }
-    const tokenUser = { id: user._id, name: user.name, role: user.role }
+    const tokenUser = createTokenUser(user);
     attachCookiesToResponse(res, tokenUser)
 
     res.status(StatusCodes.OK).json({ user: tokenUser });
@@ -40,7 +40,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     removeCookies(res);
-    res.status(StatusCodes.OK).json({msg: 'user logged out!'});
+    res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
 }
 
 

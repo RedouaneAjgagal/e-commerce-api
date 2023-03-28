@@ -15,7 +15,7 @@ router.route('/showMe')
     .get(authenticateUser, showCurrentUser);
 
 router.route('/updateUser')
-    .patch(updateUser);
+    .patch(authenticateUser, updateUser);
 
 router.route('/updateUserPassword')
     .patch(authenticateUser, updateUserPassword);
