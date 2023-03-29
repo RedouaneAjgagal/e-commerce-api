@@ -11,8 +11,9 @@ const getAllUsers = async (req, res) => {
 
 
 const getSingleUser = async (req, res) => {
-    const { id } = req.params
-    const user = await permissionChecker(req.user, id);
+    const { id } = req.params;
+    const accessRoles = ['admin'];
+    const user = await permissionChecker(req.user, id, accessRoles);
     res.status(StatusCodes.OK).json({ user });
 }
 
