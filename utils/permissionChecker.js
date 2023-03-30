@@ -1,15 +1,13 @@
-const { UnauthorizedError, NotFoundError } = require('../errors');
-const User = require('../models/User');
+const { UnauthorizedError } = require('../errors');
 
-const permissionChecker = async (requestUser, ressourceUserId, accessRoles) => {
-    const user = await User.findById(ressourceUserId).select('-password');
-    if (!user) {
-        throw new NotFoundError(`There is no user with id ${id}..`);
-    }
-    if (user._id.toString() !== requestUser.id.toString() && !accessRoles.includes(requestUser.role)) {
-        throw new UnauthorizedError('You do not have access to this route.');
+const permissionChecker = async (ressourceId, request, accessRoles) => {
+    if (ressourceId.toString() === request.id.toString()) {
+        return
     };
-    return user
+    if (accessRoles.includes(request.role)) {
+        return
+    }
+    throw new UnauthorizedError('You do not have access to this route.');
 }
 
 module.exports = permissionChecker

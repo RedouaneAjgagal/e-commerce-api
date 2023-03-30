@@ -12,8 +12,12 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
     const { id } = req.params;
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+        throw new NotFoundError(`There is no user with id ${id}..`);
+    }
     const accessRoles = ['admin'];
-    const user = await permissionChecker(req.user, id, accessRoles);
+    await permissionChecker(user._id, req.user, accessRoles);
     res.status(StatusCodes.OK).json({ user });
 }
 

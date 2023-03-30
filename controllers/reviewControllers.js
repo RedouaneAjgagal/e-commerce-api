@@ -1,7 +1,8 @@
 const Review = require('../models/Review');
 const Product = require('../models/Product');
-const { BadRequestError, NotFoundError } = require('../errors');
+const { BadRequestError, NotFoundError, UnauthorizedError } = require('../errors');
 const { StatusCodes } = require('http-status-codes');
+const { permissionChecker } = require('../utils')
 
 const getAllReviews = async (req, res) => {
     const reviews = await Review.find({});
@@ -12,7 +13,7 @@ const singleReview = async (req, res) => {
     const { reviewId } = req.params;
     const review = await Review.findById(reviewId);
     if (!review) {
-        throw new NotFoundError(`No review with id ${reviewId} is found.`);
+        throw new NotFoundError(`Found no review with id ${reviewId}`);
     }
     res.status(StatusCodes.OK).json(review);
 }
@@ -37,7 +38,15 @@ const updateReview = async (req, res) => {
 }
 
 const deleteReview = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'delete review' });
+    const { reviewId } = req.params;
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        throw new NotFoundError(`Found no review with id ${reviewId}`);
+    }
+    const accessRoles = ['admin'];
+    await permissionChecker(review.user._id, req.user, accessRoles);
+    review.deleteOne();
+    res.status(StatusCodes.OK).json({ msg: `Review ${reviewId} has been deleted successfully` });
 }
 
 module.exports = {
