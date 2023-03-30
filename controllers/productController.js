@@ -11,7 +11,10 @@ const getSingleProduct = async (req, res) => {
 }
 
 const createProduct = async (req, res) => {
-    res.status(StatusCodes.CREATED).json({ msg: 'create product' });
+    const userId = req.user.id;
+    req.body.user = userId;
+    const newProduct = await Product.create(req.body);
+    res.status(StatusCodes.CREATED).json({product: newProduct});
 }
 
 const updateProduct = async (req, res) => {
