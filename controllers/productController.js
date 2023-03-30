@@ -3,18 +3,21 @@ const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
 
 const getAllProducts = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'get all procucts' });
+    const products = await Product.find({});
+    res.status(StatusCodes.OK).json(products);
 }
 
 const getSingleProduct = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'get single procucts' });
+    const { productId } = req.params;
+    const product = await Product.findById(productId);
+    res.status(StatusCodes.OK).json(product);
 }
 
 const createProduct = async (req, res) => {
     const userId = req.user.id;
     req.body.user = userId;
     const newProduct = await Product.create(req.body);
-    res.status(StatusCodes.CREATED).json({product: newProduct});
+    res.status(StatusCodes.CREATED).json({ product: newProduct });
 }
 
 const updateProduct = async (req, res) => {
