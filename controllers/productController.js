@@ -4,13 +4,13 @@ const { BadRequestError, NotFoundError } = require('../errors');
 const path = require('path');
 
 const getAllProducts = async (req, res) => {
-    const products = await Product.find({}).populate({path: 'user', select: 'name'});
+    const products = await Product.find({}).populate({ path: 'user', select: 'name' })
     res.status(StatusCodes.OK).json(products);
 }
 
 const getSingleProduct = async (req, res) => {
     const { productId } = req.params;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate({ path: 'reviews'});
     if (!product) {
         throw new NotFoundError(`No product with id ${productId}`);
     }
