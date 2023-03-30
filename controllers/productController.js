@@ -1,6 +1,7 @@
 const Product = require('../models/Product');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
+const path = require('path');
 
 const getAllProducts = async (req, res) => {
     const products = await Product.find({});
@@ -43,7 +44,17 @@ const deleteProduct = async (req, res) => {
 }
 
 const uploadProductImg = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'upload product image' });
+    const { image: productImg } = req.files;
+    if (!productImg.mimetype.startsWith('image')) {
+        throw new BadRequestError('Only images are supported.');
+    }
+    const maxImgSize = 1024 * 1024;
+    if (productImg.size > maxImgSize) {
+        throw new BadRequestError('Image size cannot be larger than 1MB');
+    }
+    const imgPath = path.join(__dirname, '../public/uploads/', productImg.name);
+    await productImg.mv(imgPath);
+    res.status(StatusCodes.OK).json({ img: `uploads/${productImg.name}` });
 }
 
 module.exports = {

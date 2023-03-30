@@ -11,6 +11,7 @@ const connectDB = require('./db/connect');
 // Extra packages
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 
 // routes
 const authRouter = require('./routes/authRoutes');
@@ -26,7 +27,8 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 app.use(morgan('dev'))
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
-
+app.use(express.static('./public'));
+app.use(fileUpload());
 
 app.get('/', (req, res) => {
     const { token } = req.signedCookies;
