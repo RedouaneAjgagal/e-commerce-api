@@ -4,11 +4,17 @@ const { BadRequestError, NotFoundError } = require('../errors');
 const { StatusCodes } = require('http-status-codes');
 
 const getAllReviews = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'All reviews' });
+    const reviews = await Review.find({});
+    res.status(StatusCodes.OK).json(reviews);
 }
 
 const singleReview = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'Single review' });
+    const { reviewId } = req.params;
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        throw new NotFoundError(`No review with id ${reviewId} is found.`);
+    }
+    res.status(StatusCodes.OK).json(review);
 }
 
 const createReview = async (req, res) => {
