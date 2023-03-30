@@ -34,7 +34,20 @@ const createReview = async (req, res) => {
 }
 
 const updateReview = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'update review' });
+    const { reviewId } = req.params;
+    const { rating, title, comment } = req.body;
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        throw new NotFoundError(`Found no review with id ${reviewId}`);
+    }
+    const accessRoles = ['admin'];
+    await permissionChecker(review.user._id, req.user, accessRoles);
+    const updatedReview = {};
+    if (rating) updatedReview.rating = rating;
+    if (title) updatedReview.title = title;
+    if (comment) updatedReview.comment = comment;
+    await review.updateOne(updatedReview, { runValidators: true});
+    res.status(StatusCodes.OK).json(review);
 }
 
 const deleteReview = async (req, res) => {
@@ -45,7 +58,7 @@ const deleteReview = async (req, res) => {
     }
     const accessRoles = ['admin'];
     await permissionChecker(review.user._id, req.user, accessRoles);
-    review.deleteOne();
+    await review.deleteOne();
     res.status(StatusCodes.OK).json({ msg: `Review ${reviewId} has been deleted successfully` });
 }
 
