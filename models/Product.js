@@ -54,18 +54,18 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    averageRating: {
-        type: Number,
-        default: 0
-    },
     user: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    avgRating: {
+        type: Number,
+        default: 0
+    },
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-productSchema.virtual('reviews', {
+productSchema.virtual('review', {
     ref: 'Review',
     localField: '_id',
     foreignField: 'product',
