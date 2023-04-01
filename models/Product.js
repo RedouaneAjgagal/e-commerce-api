@@ -70,7 +70,11 @@ productSchema.virtual('reviews', {
     localField: '_id',
     foreignField: 'product',
     justOne: false
-})
+});
+
+productSchema.pre('deleteOne', { document: true, query: false }, async function () {
+    await this.model('Review').deleteMany({ product: this._id });
+});
 
 const Product = mongoose.model('Product', productSchema);
 
