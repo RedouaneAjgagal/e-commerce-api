@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const Review = require('../models/Review');
 const { StatusCodes } = require('http-status-codes');
 const { BadRequestError, NotFoundError } = require('../errors');
 const path = require('path');
@@ -10,7 +11,7 @@ const getAllProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
     const { productId } = req.params;
-    const product = await Product.findById(productId).populate({ path: 'reviews'});
+    const product = await Product.findById(productId).populate({ path: 'reviews' });
     if (!product) {
         throw new NotFoundError(`No product with id ${productId}`);
     }
@@ -57,11 +58,21 @@ const uploadProductImg = async (req, res) => {
     res.status(StatusCodes.OK).json({ img: `uploads/${productImg.name}` });
 }
 
+const getProductReviews = async (req, res) => {
+    const { productId } = req.params;
+    const reviews = await Review.find({ product: productId });
+    if (reviews.length < 1) {
+        return res.status(StatusCodes.OK).json({ msg: "This product doesn't contain any reviews yet." });
+    }
+    res.status(StatusCodes.OK).json(reviews);
+}
+
 module.exports = {
     getAllProducts,
     getSingleProduct,
     createProduct,
     updateProduct,
     deleteProduct,
-    uploadProductImg
+    uploadProductImg,
+    getProductReviews
 }
