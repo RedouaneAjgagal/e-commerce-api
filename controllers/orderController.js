@@ -73,7 +73,17 @@ const getCurrentUserOrders = async (req, res) => {
 }
 
 const updateOrder = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'Order updated' });
+    const { paymentIntentId } = req.body;
+    const { id: orderId } = req.params;
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new NotFoundError(`Found no order with id ${orderId}`);
+    }
+    await permissionChecker(order.user, req.user, ["admin"]);
+    order.paymentIntentId = paymentIntentId;
+    order.status = 'paid';
+    await order.save();
+    res.status(StatusCodes.OK).json(order);
 }
 
 

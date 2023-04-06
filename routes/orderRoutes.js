@@ -14,7 +14,7 @@ router.route('/showAllMyOrders')
 
 router.route('/:id')
     .get(authenticateUser, getSingleOrder)
-    .put(authenticateUser, updateOrder);
+    .patch(authenticateUser, updateOrder);
 
 
 module.exports = router
