@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { StatusCodes } = require('http-status-codes');
 const { NotFoundError, BadRequestError } = require('../errors');
+const permissionChecker = require('../utils/permissionChecker');
 
 const fakeStripAPI = ({ amount, currency }) => {
     const client_secret = 'SomeRandomSecret';
@@ -10,7 +11,8 @@ const fakeStripAPI = ({ amount, currency }) => {
 
 
 const getAllOrders = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'All Orders' });
+    const orders = await Order.find({});
+    res.status(StatusCodes.OK).json(orders);
 }
 
 const createOrder = async (req, res) => {
@@ -57,11 +59,17 @@ const createOrder = async (req, res) => {
 }
 
 const getSingleOrder = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'Single Order' });
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+        throw new NotFoundError(`Found no order with id ${req.params.id}`)
+    }
+    await permissionChecker(order.user, req.user, ["admin"]);
+    res.status(StatusCodes.OK).json(order);
 }
 
 const getCurrentUserOrders = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: 'Current user orders' });
+    const orders = await Order.find({ user: req.user.id });
+    res.status(StatusCodes.OK).json(orders);
 }
 
 const updateOrder = async (req, res) => {
