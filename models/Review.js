@@ -39,11 +39,19 @@ reviewSchema.statics.getAvgRating = async function (productId) {
         {
             $group: {
                 _id: null,
-                avgRating: { $avg: "$rating" }
+                avgRating: { $avg: "$rating" },
+                numOfReviews: { $sum: 1 }
             }
         }
     ]);
-    await this.model('Product').findOneAndUpdate({ _id: productId }, { avgRating: Math.ceil(result?.avgRating || 0) });
+    await this.model('Product').findOneAndUpdate(
+        { _id: productId },
+        {
+            avgRating: Math.ceil(result?.avgRating || 0),
+            numOfReviews: result?.numOfReviews || 0
+        }
+    );
+    console.log(result);
 }
 
 reviewSchema.post(['updateOne', 'deleteOne', 'save'], { document: true }, async function () {

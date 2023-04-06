@@ -63,6 +63,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    numOfReviews: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 productSchema.virtual('review', {
